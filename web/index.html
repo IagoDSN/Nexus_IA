@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus AI</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+    <div class="app-container">
+        <main class="chat-area">
+            <header class="chat-header">
+                <div class="logo">
+                    <i data-lucide="zap"></i>
+                    <span>Nexus AI</span>
+                </div>
+                
+                <div class="voice-settings">
+                    <select id="voiceGender">
+                        <option value="male">Atlas</option>
+                        <option value="female">Unova</option>
+                    </select>
+                </div>
+            </header>
+
+            <div class="messages-container" id="messagesContainer">
+                <div class="message ai-message fade-in">
+                    <div class="message-content">
+                        Sistemas prontos. Aguardando sua voz ou comando de texto.
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-area">
+                <div class="input-wrapper">
+                    <textarea id="userInput" placeholder="Digite algo..." rows="1"></textarea>
+                    <div class="input-actions">
+                        <button id="micBtn" class="action-btn mic" title="Falar (Modo Jarvis)">
+                            <i data-lucide="mic"></i>
+                        </button>
+                        <button id="sendBtn" class="action-btn send">
+                            <i data-lucide="send-horizonal"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="jarvisOverlay" class="jarvis-overlay">
+        <div class="orb-container">
+            <div id="jarvisOrb" class="orb"></div>
+        </div>
+        <div id="transcriptPreview">escutando...</div>
+        <button id="cancelVoice">Abortar Comando</button>
+    </div>
+
+    <audio id="responseAudio" hidden></audio>
+
+    <script src="script.js"></script>
+</body>
+</html>
