@@ -1,14 +1,24 @@
 # Nexus AI
 
-Assistente inteligente com interface de chat e comando de voz contínuo, inspirado no sistema **Jarvis**. O projeto utiliza uma stack moderna focada em performance local e baixíssima latência.
+Assistente inteligente com interface de chat e comando de voz contínuo. O projeto utiliza uma stack moderna focada em performance local e baixíssima latência.
 
 ## 🚀 Funcionalidades
 
 * **Chat com IA:** Interface textual fluida, moderna e responsiva.
-* **Modo Jarvis:** Reconhecimento de voz em tempo real com overlay visual de "bola voadora" (Orb).
-* **Personalidade Dinâmica:** Escolha entre **Jarvis** (Voz Masculina/Ciano) e **Friday** (Voz Feminina/Rosa).
+* **Modo chat continuo:** Reconhecimento de voz em tempo real com overlay visual de "bola voadora" (Orb).
+* **Personalidade Dinâmica:** Escolha entre (Voz Masculina/Atlas) ou (Voz Feminina/Unova).
 * **TTS Local com Piper:** Geração de voz extremamente rápida processada localmente no servidor.
 * **Inteligência Groq:** Processamento de linguagem natural de alta velocidade via API.
+
+## 🛠 Tecnologias Utilizadas
+
+![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)
+![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
+![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
+![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/css3-%231572B6.svg?style=for-the-badge&logo=css3&logoColor=white)
+![Groq](https://img.shields.io/badge/Groq-f55036?style=for-the-badge)
+
 
 ## ⚙️ Instalação
 
@@ -16,17 +26,14 @@ Siga os passos abaixo para configurar o ambiente:
 
 ```bash
 # Clone o repositório
-git clone [https://github.com/seu-usuario/seu-repo.git](https://github.com/seu-usuario/seu-repo.git)
-cd Agente_De_IA
+git clone https://github.com/IagoDSN/Nexus_IA
+cd Nexus_IA
 
 # Crie um ambiente virtual
 python -m venv venv
 
 # Ative o ambiente virtual
-# No Windows:
 venv\Scripts\activate
-# No Linux/Mac:
-source venv/bin/activate
 
 # Instale as dependências
 pip install -r requirements.txt
@@ -35,15 +42,13 @@ pip install -r requirements.txt
 ## 🔑 Configuração
 O projeto utiliza variáveis de ambiente para chaves de API e configurações sensíveis.
 
-Crie um arquivo chamado .env na raiz do projeto.
-
-Adicione sua chave da API Groq
+Adicione sua chave da API Groq no arquivo **.env**
 
 ```bash
 GROQ_API_KEY=sua_chave_aqui_da_groq
 ```
 
-# ▶️ Como Rodar
+## ▶️ Como Rodar
 Com o ambiente configurado, inicie o servidor FastAPI:
 
 ```bash
@@ -51,13 +56,28 @@ uvicorn main:app --reload
 ```
 
 Após iniciar, acesse a interface pelo navegador:
-👉 http://127.0.0.1:8000/web/index.html
+http://127.0.0.1:8000/web/index.html
 
-# ⚠️ Importante
+## ⚠️ Importante
 
 Piper TTS: Certifique-se de que os binários e modelos do Piper estão na pasta correta conforme configurado no main.py.
 
 Microfone: O navegador exige uma conexão segura (HTTPS ou localhost) para permitir o uso do microfone.
 
+## Desenvolvedor
 
-Desenvolvido por Iago Nunes
+<div>
+  <a href="https://github.com/IagoDSN">
+    <h1>IagoDSN</h1>
+  </a>
+
+  <div>
+    <a href="https://www.linkedin.com/in/iago-nunes-2509a83ba" target="_blank">
+      <img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn">
+    </a>
+    <a href="https://www.instagram.com/iago_sepini/" target="_blank">
+      <img src="https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white" alt="Instagram">
+    </a>
+  </div>
+  <br />
+</div>
