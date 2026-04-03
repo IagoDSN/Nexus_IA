@@ -67,9 +67,9 @@ Microfone: O navegador exige uma conexão segura (HTTPS ou localhost) para permi
 ## Desenvolvedor
 
 <div>
-  <a href="https://github.com/IagoDSN">
-    <h1>IagoDSN</h1>
-  </a>
+  <h1>
+    <a href="https://github.com/IagoDSN">IagoDSN</a>
+  </h1>
 
   <div>
     <a href="https://www.linkedin.com/in/iago-nunes-2509a83ba" target="_blank">
