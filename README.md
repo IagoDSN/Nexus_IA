@@ -1,4 +1,4 @@
-# Nexus AI
+# <img src="https://api.iconify.design/lucide:zap.svg?color=%23007bff" width="27" vertical-align="bottom"> Nexus AI
 
 Assistente inteligente com interface de chat e comando de voz contínuo. O projeto utiliza uma stack moderna focada em performance local e baixíssima latência.
 
