@@ -5,9 +5,9 @@ Assistente inteligente com interface de chat e comando de voz contínuo. O proje
 ## 🚀 Funcionalidades
 
 * **Chat com IA:** Interface textual fluida, moderna e responsiva.
-* **Modo chat continuo:** Reconhecimento de voz em tempo real com overlay visual de "bola voadora" (Orb).
+* **Modo chat continuo:** Reconhecimento de voz em tempo real com overlay.
 * **Personalidade Dinâmica:** Escolha entre (Voz Masculina/Atlas) ou (Voz Feminina/Unova).
-* **TTS Local com Piper:** Geração de voz extremamente rápida processada localmente no servidor.
+* **TTS Local com Piper:** Geração de voz extremamente rápida processada localmente no servidor com Piper.
 * **Inteligência Groq:** Processamento de linguagem natural de alta velocidade via API.
 
 ## 🛠 Tecnologias Utilizadas
