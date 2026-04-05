@@ -1,6 +1,4 @@
-// =========================
-// INIT
-// =========================
+// INITIALIZAÇÃO
 lucide.createIcons();
 
 const userInput = document.getElementById('userInput');
@@ -16,23 +14,35 @@ const jarvisOrb = document.getElementById("jarvisOrb");
 const transcriptPreview = document.getElementById("transcriptPreview");
 const cancelVoice = document.getElementById("cancelVoice");
 
-// =========================
 // ESTADO
-// =========================
 let modoJarvis = false;
 let recognition = null;
 let escutando = false;
+let falando = false;
+let recognitionAtivo = false;
 
-// =========================
+
 // CONFIG MICROFONE
-// =========================
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+
+function iniciarReconhecimento() {
+    if (!recognition) return;
+
+    try {
+        recognition.start();
+        recognitionAtivo = true;
+        console.log("Microfone iniciado");
+    } catch (e) {
+        console.log("Erro ao iniciar mic:", e);
+    }
+}
 
 if (SpeechRecognition) {
     recognition = new SpeechRecognition();
     recognition.lang = 'pt-BR';
     recognition.interimResults = false;
-    recognition.continuous = false;
+    recognition.continuous = true;
 
     recognition.onstart = () => {
         escutando = true;
@@ -41,10 +51,11 @@ if (SpeechRecognition) {
 
     recognition.onend = () => {
         escutando = false;
+        console.log("Mic desligado");
 
-        if (modoJarvis) {
+        if (modoJarvis && !falando) {
             setTimeout(() => {
-                try { recognition.start(); } catch { }
+                iniciarReconhecimento();
             }, 800);
         }
     };
@@ -54,40 +65,39 @@ if (SpeechRecognition) {
 
         if (modoJarvis) {
             setTimeout(() => {
-                try { recognition.start(); } catch { }
+                try { iniciarReconhecimento(); } catch { }
             }, 1000);
         }
     };
 
     recognition.onresult = (event) => {
-        let transcript = '';
 
-        for (let i = 0; i < event.results.length; i++) {
-            transcript += event.results[i][0].transcript;
+        if (falando) {
+            console.log("Ignorando, IA ainda está falando...");
+            return;
         }
 
-        if (!transcript.trim()) return;
+        const texto = event.results[0][0].transcript;
+        console.log("Você disse:", texto);
 
-        console.log("Você:", transcript);
-
-        transcriptPreview.innerText = transcript;
-        userInput.value = transcript;
-
-        enviarMensagem();
+        enviarMensagem(texto);
     };
 
 } else {
     console.warn("Web Speech API não suportada");
 }
 
-// =========================
 // ENVIAR MENSAGEM
-// =========================
-async function enviarMensagem() {
-    const text = userInput.value.trim();
+async function enviarMensagem(textoVoz = null) {
+    if (falando) {
+        console.log("Ignorando voz enquanto IA fala...");
+        return;
+    }
+
+    const text = textoVoz ? textoVoz : userInput.value.trim();
     if (!text) return;
 
-    userInput.value = '';
+    if (!textoVoz) userInput.value = '';
 
     adicionarMensagem(text, 'user');
 
@@ -138,9 +148,7 @@ async function enviarMensagem() {
     }
 }
 
-// =========================
 // ADICIONAR MENSAGEM
-// =========================
 function adicionarMensagem(text, type) {
     const id = 'msg-' + Date.now();
 
@@ -160,31 +168,35 @@ function adicionarMensagem(text, type) {
     return id;
 }
 
-// =========================
 // TOCAR ÁUDIO
-// =========================
-function tocarAudio(src) {
-    audioPlayer.src = src;
-
-    // anima orb
-    jarvisOrb.style.transform = "scale(1.3)";
-
-    audioPlayer.play().catch(() => {
-        console.warn("Autoplay bloqueado");
-    });
+function tocarAudio(url) {
+    falando = true;
+    if (recognitionAtivo) {
+        try {
+            recognition.stop();
+            recognitionAtivo = false;
+        } catch { }
+    }
+    const audioPlayer = new Audio(url);
+    audioPlayer.play();
 
     audioPlayer.onended = () => {
+        console.log("IA terminou de falar");
+
+        falando = false;
+
         jarvisOrb.style.transform = "scale(1)";
 
+        // reativa microfone
         if (modoJarvis && recognition) {
-            try { recognition.start(); } catch { }
+            setTimeout(() => {
+                iniciarReconhecimento();
+            }, 500);
         }
     };
 }
 
-// =========================
 // ABRIR JARVIS
-// =========================
 micBtn.addEventListener('click', () => {
     if (!recognition) return;
 
@@ -199,12 +211,10 @@ micBtn.addEventListener('click', () => {
 
     transcriptPreview.innerText = "escutando...";
 
-    try { recognition.start(); } catch { }
+    try { iniciarReconhecimento(); } catch { }
 });
 
-// =========================
 // FECHAR JARVIS
-// =========================
 function fecharOverlay() {
     jarvisOverlay.style.display = "none";
 }
@@ -216,9 +226,7 @@ cancelVoice.addEventListener("click", () => {
     if (recognition) recognition.stop();
 });
 
-// =========================
 // BOTÕES
-// =========================
 sendBtn.addEventListener('click', enviarMensagem);
 
 userInput.addEventListener('keydown', (e) => {
