@@ -19,7 +19,35 @@ export function adicionarMensagem(text, type) {
     return id;
 }
 
-export function alternarTelas(isLogged) {
-    elements.loginSection.style.display = isLogged ? 'none' : 'flex';
-    elements.mainApp.style.display = isLogged ? 'flex' : 'none';
+export function alternarTelas(logado) {
+    const login = document.getElementById("loginSection");
+    const app = document.getElementById("mainApp");
+
+    if (logado) {
+        login.classList.remove("show");
+
+        setTimeout(() => {
+            login.style.display = "none";
+            app.style.display = "block";
+            // força reflow
+            void app.offsetWidth;
+
+            app.classList.add("show");
+
+        }, 300);
+
+    } else {
+        app.classList.remove("show");
+
+        setTimeout(() => {
+            app.style.display = "none";
+
+            login.style.display = "flex";
+
+            void login.offsetWidth;
+
+            login.classList.add("show");
+
+        }, 300);
+    }
 }

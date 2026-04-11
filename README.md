@@ -15,6 +15,8 @@ Assistente inteligente com interface de chat e comando de voz contínuo. O proje
 
 * **Chat com IA:** Interface textual fluida, moderna e responsiva.
 * **Modo chat continuo:** Reconhecimento de voz em tempo real com overlay.
+* **Memória por usuário** Conversas armazenadas no banco de dados (MySQL)
+* **Sistema de login** JWT (Sessão por usuário) + autenticação segura
 * **Personalidade Dinâmica:** Escolha entre (Voz Brasileira/Atlas) ou (Voz Portuguesa/Luso).
 * **TTS Local com Piper:** Geração de voz extremamente rápida processada localmente no servidor com Piper.
 * **Inteligência Groq:** Processamento de linguagem natural de alta velocidade via API.
@@ -27,6 +29,8 @@ Assistente inteligente com interface de chat e comando de voz contínuo. O proje
 ![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white)
 ![CSS3](https://img.shields.io/badge/css3-%231572B6.svg?style=for-the-badge&logo=css3&logoColor=white)
 ![Groq](https://img.shields.io/badge/Groq-f55036?style=for-the-badge)
+![MYSQL](https://img.shields.io/badge/MySQL-005C84?style=for-the-badge&logo=mysql&logoColor=white)
+
 
 
 ## ⚙️ Instalação
@@ -54,7 +58,14 @@ O projeto utiliza variáveis de ambiente para chaves de API e configurações se
 Adicione sua chave da API Groq no arquivo **.env**
 
 ```bash
-GROQ_API_KEY=sua_chave_aqui_da_groq
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=sua_senha
+DB_NAME=nexus
+
+SECRET_KEY=sua_chave_secreta
+
+GROQ_API_KEY=sua_chave
 ```
 
 ## ▶️ Como Rodar

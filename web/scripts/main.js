@@ -3,6 +3,10 @@ import { enviarParaChat, realizarLogin, registrar } from './api.js';
 import { VoiceManager } from './voice.js';
 import { Auth } from './auth.js';
 
+if (window.lucide) {
+    window.lucide.createIcons();
+}
+
 let modoJarvis = false;
 
 // 1. Inicializa Voz
@@ -140,8 +144,17 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // Auto-login se já existir sessão no localStorage
-    // if (Auth.getUser()) {
-    //     alternarTelas(true);
-    //     if (window.lucide) window.lucide.createIcons();
-    // }
+    if (Auth.getUser()) {
+        alternarTelas(true);
+        if (window.lucide) window.lucide.createIcons();
+    }
 });
+
+const logoutBtn = document.getElementById('logoutBtn');
+
+if (logoutBtn) {
+    logoutBtn.onclick = () => {
+        localStorage.removeItem("user");
+        location.reload();
+    };
+}

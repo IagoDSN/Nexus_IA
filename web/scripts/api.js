@@ -1,5 +1,3 @@
-import { Auth } from './auth.js';
-
 export async function enviarParaChat(text, username, voice, jarvis) {
     const user = JSON.parse(localStorage.getItem("user"));
 
