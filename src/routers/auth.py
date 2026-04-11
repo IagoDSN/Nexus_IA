@@ -1,4 +1,4 @@
-from src.connection import get_connection
+from src.database.connection import get_connection
 import bcrypt
 import re
 

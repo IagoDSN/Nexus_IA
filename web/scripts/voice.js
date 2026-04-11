@@ -6,6 +6,7 @@ export class VoiceManager {
         this.falando = false;
         this.escutando = false;
         this.ultimoTexto = "";
+        this.ativo = false;
 
         if (this.recognition) {
             this.recognition.lang = 'pt-BR';
@@ -31,9 +32,16 @@ export class VoiceManager {
             this.recognition.onend = () => {
                 this.escutando = false;
 
-                if (!this.falando) {
-                    setTimeout(() => this.start(), 500);
+                if (!this.ativo) {
+                    console.log("Reconhecimento parado (ativo = false)");
+                    return;
                 }
+
+                if (this.falando) return;
+
+                setTimeout(() => {
+                    this.start();
+                }, 500);
 
                 if (onEnd) onEnd();
             };
@@ -41,25 +49,30 @@ export class VoiceManager {
     }
 
     start() {
-        if (!this.recognition || this.escutando) return;
+    if (!this.recognition || this.escutando) return;
 
-        try {
-            this.recognition.start();
-            this.escutando = true;
-        } catch(e) {}
-    }
+    this.ativo = true;
+
+    try {
+        this.recognition.start();
+        this.escutando = true;
+    } catch (e) {}
+}
 
     stop() {
         if (!this.recognition) return;
 
+        this.ativo = false;
+
         try {
             this.recognition.stop();
             this.escutando = false;
-        } catch(e) {}
+        } catch (e) { }
     }
 
     tocarAudio(url, onAudioEnd) {
         this.falando = true;
+
         this.stop();
 
         const audio = new Audio(url);
@@ -67,9 +80,9 @@ export class VoiceManager {
 
         audio.onended = () => {
             this.falando = false;
-
-            // volta a escutar
-            this.start();
+            if (this.ativo) {
+                this.start();
+            }
 
             if (onAudioEnd) onAudioEnd();
         };

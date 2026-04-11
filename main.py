@@ -7,11 +7,11 @@ import os
 from jose import jwt
 import datetime
 
-from src.brain import processar_mensagem
-from src.database import get_user_memory, salvar_mensagem, limpar_memoria
-from src.auth import user_exists, criar_usuario, validar_username, verify_password, get_user_login, senha_forte
-from src.tts import gerar_audio
-from src.security import SECRET_KEY
+from src.core.brain import processar_mensagem
+from src.database.databaseControl import get_user_memory, salvar_mensagem, limpar_memoria
+from src.routers.auth import user_exists, criar_usuario, validar_username, verify_password, get_user_login, senha_forte
+from src.services.tts import gerar_audio
+from src.core.security import SECRET_KEY
 
 
 SECRET_KEY = os.getenv("SECRET_KEY", "secret")
@@ -30,11 +30,9 @@ class Register(BaseModel):
     email: str
     password: str
 
-
 class Login(BaseModel):
     login: str
     password: str
-
 
 class Message(BaseModel):
     text: str
@@ -42,6 +40,7 @@ class Message(BaseModel):
     jarvis: bool = False
     voice: str = "male"
 
+# ================= Functions =================
 
 security = HTTPBearer()
 def criar_token(data: dict):
