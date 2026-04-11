@@ -98,18 +98,24 @@ Microfone: O navegador exige uma conexão segura (HTTPS ou localhost) para permi
 
 ## Desenvolvedor
 
-<h1 align="left">
-  <a href="https://github.com/IagoDSN" style="color: #24292f; text-decoration: none;">
-    <img src="https://skillicons.dev/icons?i=github" height="32" vertical-align="middle">
-    <span style="color: #24292f; font-weight: bold; margin-left: 10px;">IagoDSN</span>
-  </a>
-</h1>
+## Author
 
-<p align="left">
+<div align="left">
+  <code><strong>IagoDSN</strong></code> — <i>Full Stack Developer & AI Creator</i>
+  <br>
+  <img src="https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/aqua.png" width="100%">
+</div>
+
+<br>
+
+<div align="left">
+  <a href="https://github.com/IagoDSN" target="_blank">
+    <img src="https://img.shields.io/static/v1?label=GITHUB&message=FOLLOW&color=000&style=for-the-badge&logo=github" alt="Github">
+  </a>
   <a href="https://www.linkedin.com/in/iago-nunes-2509a83ba" target="_blank">
-    <img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn">
+    <img src="https://img.shields.io/static/v1?label=LINKEDIN&message=CONNECT&color=0077B5&style=for-the-badge&logo=linkedin" alt="Linkedin">
   </a>
   <a href="https://www.instagram.com/iago_sepini/" target="_blank">
-    <img src="https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white" alt="Instagram">
+    <img src="https://img.shields.io/static/v1?label=INSTAGRAM&message=SOCIAL&color=E4405F&style=for-the-badge&logo=instagram" alt="Instagram">
   </a>
-</p>
+</div>
