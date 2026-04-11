@@ -56,12 +56,12 @@ pip install -r requirements.txt
 O projeto utiliza **MySQL/MariaDB**. Para configurar a estrutura necessária:
 
 1. Certifique-se de ter um servidor MySQL rodando em sua máquina.
-2. Localize o arquivo de script em: `bd/script.sql`.
+2. Localize o arquivo de script em: `BD/script.sql`.
 3. Execute o script no seu gerenciador de banco de dados (HeidiSQL, MySQL Workbench, ou via terminal) para criar o banco `nexus` e as tabelas `users` e `memory`.
 
 ```bash
 # Exemplo via terminal
-mysql -u root -p < bd/script.sql
+mysql -u root -p < BD/script.sql
 ```
 
 ## 🔑 Configuração do ambiente
