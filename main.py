@@ -1,47 +1,136 @@
-import time
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, Depends
+from fastapi.security import HTTPBearer
 from pydantic import BaseModel
 from fastapi.staticfiles import StaticFiles
+import time
 import os
+from jose import jwt
+import datetime
 
-from brain import processar_mensagem
-from tts import gerar_audio
+from src.brain import processar_mensagem
+from src.database import get_user_memory, salvar_mensagem, limpar_memoria
+from src.auth import user_exists, criar_usuario, validar_username, verify_password, get_user_login, senha_forte
+from src.tts import gerar_audio
+from src.security import SECRET_KEY
+
+
+SECRET_KEY = os.getenv("SECRET_KEY", "secret")
+ALGORITHM = "HS256"
 
 app = FastAPI()
 
-if not os.path.exists("audio"):
-    os.makedirs("audio")
+app.mount("/web", StaticFiles(directory="web"), name="web")
+app.mount("/audio", StaticFiles(directory="audio"), name="audio")
 
-app.mount("/web", StaticFiles(directory="web", html=True), name="web")
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-AUDIO_DIR = os.path.join(BASE_DIR, "audio")
+# ================= MODELS =================
 
-print("AUDIO DIR:", AUDIO_DIR)
+class Register(BaseModel):
+    username: str
+    email: str
+    password: str
 
-app.mount("/audio", StaticFiles(directory=AUDIO_DIR), name="audio")
+
+class Login(BaseModel):
+    login: str
+    password: str
+
 
 class Message(BaseModel):
     text: str
-    voice: str | None = "male"
+    username: str
     jarvis: bool = False
+    voice: str = "male"
 
+
+security = HTTPBearer()
+def criar_token(data: dict):
+    payload = data.copy()
+    payload["exp"] = datetime.datetime.utcnow() + datetime.timedelta(hours=8)
+
+    token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+    return token
+
+def verificar_token(token=Depends(security)):
+    try:
+        payload = jwt.decode(token.credentials, SECRET_KEY, algorithms=[ALGORITHM])
+        return payload
+    except:
+        raise HTTPException(status_code=401, detail="Token inválido")
+
+# ================= REGISTER =================
+
+@app.post("/register")
+def register(data: Register):
+
+    # validar username
+    if not validar_username(data.username):
+        raise HTTPException(status_code=400, detail="Username inválido")
+
+    # validar senha
+    ok, msg = senha_forte(data.password)
+    if not ok:
+        raise HTTPException(status_code=400, detail=msg)
+
+    # verificar duplicado
+    if user_exists(data.email) or user_exists(data.username):
+        raise HTTPException(status_code=400, detail="Usuário ou email já existe")
+
+    criar_usuario(data.username, data.email, data.password)
+
+    return {"msg": "Usuário criado com sucesso"}
+
+
+# ================= LOGIN =================
+
+@app.post("/login")
+def login(data: Login):
+
+    user = user_exists(data.login)
+
+    if not user:
+        raise HTTPException(status_code=401, detail="Usuário não existe")
+
+    if not verify_password(data.password, user["password"]):
+        raise HTTPException(status_code=401, detail="Senha incorreta")
+
+    token = criar_token({
+        "username": user["username"],
+        "role": user["role"]
+    })
+
+    return {
+        "token": token,
+        "username": user["username"],
+        "role": user["role"]
+    }
+
+# ================= CHAT =================
 
 @app.post("/chat")
-def chat(msg: Message):
-    print("Recebi:", msg.text)
+def chat(msg: Message, user=Depends(verificar_token)):
+    print(f"Recebi de {msg.username}: {msg.text}")
 
-    resposta = processar_mensagem(msg.text, msg.jarvis)
+    memoria = get_user_memory(msg.username)
+
+    resposta = processar_mensagem(
+        msg.text,
+        jarvis=msg.jarvis,
+        memoria_db=memoria,
+        nome_usuario=msg.username
+    )
+
     print("Resposta IA:", resposta)
+
+    salvar_mensagem(msg.username, "user", msg.text)
+    salvar_mensagem(msg.username, "assistant", resposta)
+
+    limpar_memoria(msg.username)
 
     audio_url = None
 
     if msg.jarvis:
-        voice = msg.voice or "male"
-
-        audio_path = gerar_audio(resposta, voice)
-        print("Audio gerado:", audio_path)
-
+        audio_path = gerar_audio(resposta, msg.voice)
         audio_url = f"http://127.0.0.1:8000/{audio_path}?t={time.time()}"
 
     return {

@@ -1,14 +1,10 @@
 import subprocess
-import uuid
-import os
 
 PIPER_PATH = "./piper/piper.exe"
-MODEL_MALE = "voices/male.onnx"
-MODEL_FEMALE = "voices/female.onnx"
+MODEL_BR = "voices/br.onnx"
+MODEL_PT = "voices/pt.onnx"
 
 def gerar_audio(texto, voice="male"):
-    import subprocess
-    import os
 
     filename = "audio/audio.wav"
 
@@ -16,9 +12,9 @@ def gerar_audio(texto, voice="male"):
         voice = "male"
 
     if voice == "female":
-        model = "voices/female.onnx"
+        model = MODEL_PT
     else:
-        model = "voices/male.onnx"
+        model = MODEL_BR
 
     print("VOICE:", voice)
     print("MODEL:", model)

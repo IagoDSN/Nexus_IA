@@ -1,44 +1,93 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus AI</title>
+    <title>Nexus AI - Interface</title>
+    <link rel="icon"
+        href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSxa1QoYtdH5IN1brKXbFixp6rIJv1YbEAeJg&s">
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
+
 <body>
 
-    <div class="app-container">
+    <!-- LOGIN / CADASTRO -->
+    <div id="loginSection" class="auth-wrapper">
+        <div class="login-card">
+
+            <div class="login-header">
+                <i data-lucide="shield-check"></i>
+                <h1>Nexus Protocol</h1>
+                <p>Identifique-se, Senhor.</p>
+            </div>
+
+            <!-- LOGIN -->
+            <div class="login-form" id="loginForm">
+                <input type="text" id="userLogin" placeholder="Usuário/Email" autocomplete="off">
+                <input type="password" id="passLogin" placeholder="Senha" autocomplete="new-password">
+
+                <button id="loginBtn" class="login-btn" onclick="handleLogin()">
+                    <span>Acessar</span>
+                    <i data-lucide="arrow-right"></i>
+                </button>
+
+                <p class="switch-auth">
+                    Não tem conta?
+                    <span onclick="toggleAuth()" style="cursor: pointer; color: rgb(11, 219, 219);">Cadastrar</span>
+                </p>
+            </div>
+
+            <!-- CADASTRO -->
+            <div class="login-form" id="registerForm" style="display:none;">
+                <input type="text" id="userRegister" placeholder="Usuário">
+                <input type="email" id="emailRegister" placeholder="Email">
+                <input type="password" id="passRegister" placeholder="Senha">
+
+                <button class="login-btn" onclick="handleRegister()">
+                    <span>Cadastrar</span>
+                    <i data-lucide="user-plus"></i>
+                </button>
+
+                <p class="switch-auth">
+                    Já tem conta?
+                    <span onclick="toggleAuth()" style="cursor: pointer; color: rgb(11, 219, 219);">Entrar</span>
+                </p>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- APP -->
+    <div class="app-container" id="mainApp" style="display: none;">
         <main class="chat-area">
             <header class="chat-header">
                 <div class="logo">
                     <i data-lucide="zap"></i>
-                    <span>Nexus AI</span>
+                    <span>NEXUS IA</span>
                 </div>
-                
                 <div class="voice-settings">
                     <select id="voiceGender">
                         <option value="male">Atlas</option>
-                        <option value="female">Unova</option>
+                        <option value="female">Luso</option>
                     </select>
+                </div>
+                <div class="user-actions">
+                    <button id="logoutBtn" class="logout-btn">
+                        <i data-lucide="log-out"></i>
+                    </button>
                 </div>
             </header>
 
-            <div class="messages-container" id="messagesContainer">
-                <div class="message ai-message fade-in">
-                    <div class="message-content">
-                        Sistemas prontos. Aguardando sua voz ou comando de texto.
-                    </div>
-                </div>
-            </div>
+            <div class="messages-container" id="messagesContainer"></div>
 
             <div class="input-area">
                 <div class="input-wrapper">
-                    <textarea id="userInput" placeholder="Digite algo..." rows="1"></textarea>
+                    <textarea id="userInput" placeholder="Envie um comando..." rows="1"></textarea>
                     <div class="input-actions">
-                        <button id="micBtn" class="action-btn mic" title="Falar (Modo Jarvis)">
+                        <button id="micBtn" class="action-btn mic">
                             <i data-lucide="mic"></i>
                         </button>
                         <button id="sendBtn" class="action-btn send">
@@ -54,12 +103,22 @@
         <div class="orb-container">
             <div id="jarvisOrb" class="orb"></div>
         </div>
-        <div id="transcriptPreview">escutando...</div>
-        <button id="cancelVoice">Abortar Comando</button>
+        <div id="transcriptPreview">Escutando comandos...</div>
+        <button id="cancelVoice">Abortar</button>
     </div>
 
-    <audio id="responseAudio" hidden></audio>
+    <!-- SCRIPT -->
+    <script>
+        function toggleAuth() {
+            const login = document.getElementById("loginForm");
+            const register = document.getElementById("registerForm");
 
-    <script src="script.js"></script>
+            login.style.display = login.style.display === "none" ? "flex" : "none";
+            register.style.display = register.style.display === "none" ? "flex" : "none";
+        }
+    </script>
+
+    <script type="module" src="scripts/main.js"></script>
 </body>
+
 </html>
