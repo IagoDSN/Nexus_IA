@@ -15,8 +15,8 @@ Assistente inteligente com interface de chat e comando de voz contínuo. O proje
 
 * **Chat com IA:** Interface textual fluida, moderna e responsiva.
 * **Modo chat continuo:** Reconhecimento de voz em tempo real com overlay.
-* **Memória por usuário** Conversas armazenadas no banco de dados (MySQL)
-* **Sistema de login** JWT (Sessão por usuário) + autenticação segura
+* **Memória por usuário:** Conversas armazenadas no banco de dados (MySQL)
+* **Sistema de login:** JWT (Sessão por usuário) + autenticação segura
 * **Personalidade Dinâmica:** Escolha entre (Voz Brasileira/Atlas) ou (Voz Portuguesa/Luso).
 * **TTS Local com Piper:** Geração de voz extremamente rápida processada localmente no servidor com Piper.
 * **Inteligência Groq:** Processamento de linguagem natural de alta velocidade via API.
@@ -51,11 +51,23 @@ venv\Scripts\activate
 # Instale as dependências
 pip install -r requirements.txt
 ```
+## 🗄️ Configuração do Banco de Dados
 
-## 🔑 Configuração
+O projeto utiliza **MySQL/MariaDB**. Para configurar a estrutura necessária:
+
+1. Certifique-se de ter um servidor MySQL rodando em sua máquina.
+2. Localize o arquivo de script em: `bd/script.sql`.
+3. Execute o script no seu gerenciador de banco de dados (HeidiSQL, MySQL Workbench, ou via terminal) para criar o banco `nexus` e as tabelas `users` e `memory`.
+
+```bash
+# Exemplo via terminal
+mysql -u root -p < bd/script.sql
+```
+
+## 🔑 Configuração do ambiente
 O projeto utiliza variáveis de ambiente para chaves de API e configurações sensíveis.
 
-Adicione sua chave da API Groq no arquivo **.env**
+Atualize o arquivo **.env** na raiz do projeto com suas credenciais de banco de dados, a chave mestra de criptografia e o token de acesso à API do Groq.
 
 ```bash
 DB_HOST=localhost
@@ -86,18 +98,18 @@ Microfone: O navegador exige uma conexão segura (HTTPS ou localhost) para permi
 
 ## Desenvolvedor
 
-<div>
-  <h1>
-    <a href="https://github.com/IagoDSN">IagoDSN</a>
-  </h1>
+<h1 align="left">
+  <a href="https://github.com/IagoDSN" style="color: #24292f; text-decoration: none;">
+    <img src="https://skillicons.dev/icons?i=github" height="32" vertical-align="middle">
+    <span style="color: #24292f; font-weight: bold; margin-left: 10px;">IagoDSN</span>
+  </a>
+</h1>
 
-  <div>
-    <a href="https://www.linkedin.com/in/iago-nunes-2509a83ba" target="_blank">
-      <img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn">
-    </a>
-    <a href="https://www.instagram.com/iago_sepini/" target="_blank">
-      <img src="https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white" alt="Instagram">
-    </a>
-  </div>
-  <br />
-</div>
+<p align="left">
+  <a href="https://www.linkedin.com/in/iago-nunes-2509a83ba" target="_blank">
+    <img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn">
+  </a>
+  <a href="https://www.instagram.com/iago_sepini/" target="_blank">
+    <img src="https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white" alt="Instagram">
+  </a>
+</p>
