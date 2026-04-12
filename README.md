@@ -21,6 +21,14 @@ Assistente inteligente com interface de chat e comando de voz contínuo. O proje
 * **TTS Local com Piper:** Geração de voz extremamente rápida processada localmente no servidor com Piper.
 * **Inteligência Groq:** Processamento de linguagem natural de alta velocidade via API.
 
+## 🖼️ Preview da Interface
+
+<p align="center">
+  <img src="assets/loginPage.png" width="300"/>
+</p>
+
+<br>
+
 ## 🛠 Tecnologias Utilizadas
 
 ![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)
