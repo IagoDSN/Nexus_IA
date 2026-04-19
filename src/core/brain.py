@@ -6,35 +6,87 @@ load_dotenv()
 
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
-def processar_mensagem(texto, jarvis=False, memoria_db=None, nome_usuario=None):
 
-    memoria_db = memoria_db or []
+# ================= PERSONA PROMPTS =================
+
+def get_persona_prompt(persona: str, modo: str, nome_usuario: str | None):
 
     memoria_usuario = f"\nNome do usuário: {nome_usuario}" if nome_usuario else ""
 
-    if jarvis:
-        system_prompt = f"""
-            Você é Atlas, um assistente de IA inteligente.
+    # ================= ATLAS =================
+    if persona == "atlas":
+
+        if modo == "continuo":
+            return f"""
+        Você é Atlas, um assistente de IA inteligente.
             - Fale de forma elegante, formal e respeitosa
             - Sempre trate o usuário como "Senhor"
             - Respostas curtas (máx 30 palavras)
             - Seja direto e inteligente
             {memoria_usuario}: esse é o nome registrado do usuário, use-o para se referir a ele
-            """
-    else:
-        system_prompt = f"""
+        """
+
+        else:
+            return f"""
         Você é Atlas, um assistente de IA inteligente.
+            - Fale de forma elegante, formal e respeitosa
+            - Sempre trate o usuário como "Senhor"
+            - Respostas curtas (máx 30 palavras)
+            - Seja direto e inteligente
+            {memoria_usuario}: esse é o nome registrado do usuário, use-o para se referir a ele
+        """
+
+    # ================= LUSO =================
+    elif persona == "luso":
+
+        if modo == "continuo":
+            return f"""
+        Você é Luso, um assistente amigável.
         - Fale de forma elegante, formal e respeitosa
         - Sempre trate o usuário como "Senhor"
-        - Responda de forma clara e útil
-        {memoria_usuario}: esse é o nome registrado do usuário, use-o para se referir a ele
+        - Respostas curtas (máx 30 palavras)
+        - Seja direto e inteligente
+        w{memoria_usuario}: esse é o nome registrado do usuário, use-o para se referir a ele
 """
 
-    mensagens = [{"role": "system", "content": system_prompt}]
+        else:
+            return f"""
+            Você é Luso, um assistente amigável.
+            - Fale de forma elegante, formal e respeitosa
+            - Sempre trate o usuário como "Senhor"
+            - Seja direto e inteligente
+            {memoria_usuario}: esse é o nome registrado do usuário, use-o para se referir a ele
+"""
+
+    # ================= FALLBACK =================
+    return f"""
+Você é um assistente útil e inteligente.
+Responda de forma clara.
+{memoria_usuario}
+"""
+
+
+# ================= PROCESSAMENTO =================
+
+def processar_mensagem(
+    texto: str,
+    persona: str = "atlas",
+    modo: str = "normal",
+    memoria_db: list | None = None,
+    nome_usuario: str | None = None
+):
+
+    memoria_db = memoria_db or []
+
+    system_prompt = get_persona_prompt(persona, modo, nome_usuario)
+
+    mensagens = [
+        {"role": "system", "content": system_prompt}
+    ]
 
     for m in memoria_db:
         mensagens.append({
-            "role": m["role"],
+            "role": m["role"],   # "user" ou "assistant"
             "content": m["message"]
         })
 
@@ -43,12 +95,17 @@ def processar_mensagem(texto, jarvis=False, memoria_db=None, nome_usuario=None):
         "content": texto
     })
 
-    chat_completion = client.chat.completions.create(
-        model="llama-3.1-8b-instant",
-        messages=mensagens,
-        temperature=0.7
-    )
+    try:
+        chat_completion = client.chat.completions.create(
+            model="llama-3.1-8b-instant",
+            messages=mensagens,
+            temperature=0.7
+        )
 
-    resposta = chat_completion.choices[0].message.content
+        resposta = chat_completion.choices[0].message.content
 
-    return resposta
+        return resposta
+
+    except Exception as e:
+        print("Erro na IA:", e)
+        return "Erro ao processar sua solicitação."

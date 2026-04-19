@@ -17,6 +17,7 @@ Assistente inteligente com interface de chat e comando de voz contínuo. O proje
 * **Modo chat continuo:** Reconhecimento de voz em tempo real com overlay.
 * **Memória por usuário:** Conversas armazenadas no banco de dados (MySQL)
 * **Sistema de login:** JWT (Sessão por usuário) + autenticação segura
+* **DashBoard de controle** Acesse como admin, controle usuários e veja logs
 * **Personalidade Dinâmica:** Escolha entre (Voz Brasileira/Atlas) ou (Voz Portuguesa/Luso).
 * **TTS Local com Piper:** Geração de voz extremamente rápida processada localmente no servidor com Piper.
 * **Inteligência Groq:** Processamento de linguagem natural de alta velocidade via API.
@@ -79,6 +80,7 @@ Atualize o arquivo **.env** na raiz do projeto com suas credenciais de banco de 
 
 ```bash
 DB_HOST=localhost
+DB_PORT=3306
 DB_USER=root
 DB_PASSWORD=sua_senha
 DB_NAME=nexus
@@ -103,8 +105,6 @@ http://127.0.0.1:8000/web/index.html
 Piper TTS: Certifique-se de que os binários e modelos do Piper estão na pasta correta conforme configurado no main.py.
 
 Microfone: O navegador exige uma conexão segura (HTTPS ou localhost) para permitir o uso do microfone.
-
-## Desenvolvedor
 
 ## Author
 

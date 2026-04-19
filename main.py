@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException, Depends, Header
 from fastapi.security import HTTPBearer
 from pydantic import BaseModel
 from fastapi.staticfiles import StaticFiles
@@ -8,13 +8,12 @@ from jose import jwt
 import datetime
 
 from src.core.brain import processar_mensagem
-from src.database.databaseControl import get_user_memory, salvar_mensagem, limpar_memoria
-from src.routers.auth import user_exists, criar_usuario, validar_username, verify_password, get_user_login, senha_forte
+from src.database.databaseControl import get_all_users, get_user_memory, salvar_mensagem, limpar_memoria, get_last_messages, get_user_by_username, update_role
+from src.routers.auth import user_exists, criar_usuario, validar_username, verify_password, senha_forte
 from src.services.tts import gerar_audio
 from src.core.security import SECRET_KEY
 
 
-SECRET_KEY = os.getenv("SECRET_KEY", "secret")
 ALGORITHM = "HS256"
 
 app = FastAPI()
@@ -56,6 +55,107 @@ def verificar_token(token=Depends(security)):
         return payload
     except:
         raise HTTPException(status_code=401, detail="Token inválido")
+    
+def verificar_admin(payload=Depends(verificar_token)):
+    print("PAYLOAD:", payload)
+
+    if payload.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Acesso negado")
+
+    return payload
+
+# ================= ADMIN =================
+
+@app.get("/admin/stats")
+def admin_stats(user=Depends(verificar_admin)):
+
+    users_db = get_all_users()
+    total_users = len(users_db)
+
+    users = [
+        {
+            "username": u["username"],
+            "email": u["email"],
+            "role": u.get("role", "user"),
+            "dateCreated": (
+                u["dateCreated"].isoformat()
+                if u.get("dateCreated")
+                else None
+            )
+        }
+        for u in users_db
+    ]
+
+    messages = get_last_messages(limit=20)
+
+    return {
+        "total_users": total_users,
+        "users": users,
+        "recent_messages": messages
+    }
+
+@app.post("/admin/ban")
+def ban_user(data: dict, user=Depends(verificar_admin)):
+
+    username = data.get("username")
+
+    if not username:
+        raise HTTPException(400, "Username obrigatório")
+
+    target = get_user_by_username(username)
+
+    if not target:
+        raise HTTPException(404, "Usuário não encontrado")
+    
+    if target["role"] == "admin":
+        raise HTTPException(403, "Não é possível banir um administrador")
+
+    update_role(username, "banned")
+
+    return {"msg": "Usuário banido"}
+
+@app.post("/admin/unban")
+def unban_user(data: dict, user=Depends(verificar_admin)):
+    username = data.get("username")
+
+    if not username:
+        raise HTTPException(400, "Username obrigatório")
+
+    update_role(username, "user")
+
+    return {"msg": "Usuário desBanido"}
+
+@app.post("/admin/promote")
+def promote_user(data: dict, user=Depends(verificar_admin)):
+
+    username = data.get("username")
+
+    if not username:
+        raise HTTPException(400, "Username obrigatório")
+
+    target = get_user_by_username(username)
+
+    if not target:
+        raise HTTPException(404, "Usuário não encontrado")
+
+    if target["role"] == "admin":
+        raise HTTPException(400, "Usuário já é admin")
+
+    update_role(username, "admin")
+
+    return {"msg": "Usuário promovido a admin"}
+
+@app.post("/admin/demote")
+def demote_user(data: dict, user=Depends(verificar_admin)):
+
+    username = data.get("username")
+
+    if username == user["username"]:
+        raise HTTPException(400, "Você não pode remover seu próprio admin")
+
+    update_role(username, "user")
+
+    return {"msg": "Admin removido"}
 
 # ================= REGISTER =================
 
@@ -93,6 +193,9 @@ def login(data: Login):
     if not verify_password(data.password, user["password"]):
         raise HTTPException(status_code=401, detail="Senha incorreta")
 
+    if user["role"] == "banned":
+        raise HTTPException(status_code=403, detail="Usuário banido")
+
     token = criar_token({
         "username": user["username"],
         "role": user["role"]
@@ -114,7 +217,8 @@ def chat(msg: Message, user=Depends(verificar_token)):
 
     resposta = processar_mensagem(
         msg.text,
-        jarvis=msg.jarvis,
+        persona="atlas" if msg.voice == "male" else "luso",
+        modo="continuo" if msg.jarvis else "normal",
         memoria_db=memoria,
         nome_usuario=msg.username
     )

@@ -1,27 +1,28 @@
 export async function enviarParaChat(text, username, voice, jarvis) {
-    const user = JSON.parse(localStorage.getItem("user"));
+
+    const token = localStorage.getItem("token");
 
     const res = await fetch("http://127.0.0.1:8000/chat", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${user.token}`
+            "Authorization": `Bearer ${token}`
         },
         body: JSON.stringify({
-            text,
-            username,
-            voice,
-            jarvis
+            text: text,
+            username: username,
+            voice: voice,
+            jarvis: jarvis   
         })
     });
 
     if (!res.ok) {
-        const err = await res.json();
-        console.error("Erro:", err);
+        const error = await res.json();
+        console.error(error);
         throw new Error("Falha na comunicação com Atlas");
     }
 
-    return res.json();
+    return await res.json();
 }
 
 export async function realizarLogin(login, password) {

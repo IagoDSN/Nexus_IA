@@ -15,8 +15,8 @@ const voice = new VoiceManager(
         document.getElementById('transcriptPreview').innerText = textoDetectado;
         enviarMensagem(textoDetectado);
     },
-    () => { 
-        if (modoJarvis && !voice.falando) setTimeout(() => voice.start(), 800); 
+    () => {
+        if (modoJarvis && !voice.falando) setTimeout(() => voice.start(), 800);
     }
 );
 
@@ -29,24 +29,6 @@ elements.userInput.addEventListener('keydown', (e) => {
 });
 
 // 2. FUNÇÃO DE LOGIN/REGISTRO (EXPOSTA NO HTML)
-window.handleLogin = async function() {
-    const u = document.getElementById('userLogin').value;
-    const p = document.getElementById('passLogin').value;
-    
-    if (!u || !p) {
-        alert("Preencha todos os campos.");
-        return;
-    }
-
-    try {
-        const data = await realizarLogin(u, p);
-        Auth.saveUser(data);
-        alternarTelas(true);
-        if (window.lucide) window.lucide.createIcons();
-    } catch (e) {
-        alert("Acesso negado: Usuário ou senha inválidos.");
-    }
-};
 window.handleRegister = async function () {
     const username = document.getElementById('userRegister').value;
     const email = document.getElementById('emailRegister').value;
@@ -62,6 +44,48 @@ window.handleRegister = async function () {
         alert("Conta criada! Agora faça login.");
     } catch (e) {
         alert(e.message || "Erro ao cadastrar");
+    }
+};
+
+window.handleLogin = async function () {
+    const username = document.getElementById("userLogin").value;
+    const password = document.getElementById("passLogin").value;
+
+    try {
+        const res = await fetch("http://127.0.0.1:8000/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                login: username,
+                password: password
+            })
+        });
+
+        // ❌ erro de login (mostra mensagem real do backend)
+        if (!res.ok) {
+            const error = await res.json();
+            alert(error.detail || "Erro no login");
+            return;
+        }
+
+        const data = await res.json();
+
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify({
+            username: data.username,
+            role: data.role
+        }));
+        if (data.role === "admin") {
+            window.location.href = "backoffice/dashboard.html";
+        } else {
+            alternarTelas(true);
+        }
+
+    } catch (err) {
+        console.error("Erro no login:", err);
+        alert("Erro ao conectar com servidor");
     }
 };
 
