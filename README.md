@@ -17,7 +17,7 @@ Assistente inteligente com interface de chat e comando de voz contínuo. O proje
 * **Modo chat continuo:** Reconhecimento de voz em tempo real com overlay.
 * **Memória por usuário:** Conversas armazenadas no banco de dados (MySQL)
 * **Sistema de login:** JWT (Sessão por usuário) + autenticação segura
-* **DashBoard de controle** Acesse como admin, controle usuários e veja logs
+* **Controle Administrativo:** Dashboard exclusivo para gerenciamento de usuários, bans e logs.
 * **Personalidade Dinâmica:** Escolha entre (Voz Brasileira/Atlas) ou (Voz Portuguesa/Luso).
 * **TTS Local com Piper:** Geração de voz extremamente rápida processada localmente no servidor com Piper.
 * **Inteligência Groq:** Processamento de linguagem natural de alta velocidade via API.
@@ -32,20 +32,24 @@ Assistente inteligente com interface de chat e comando de voz contínuo. O proje
 
 ## 🛠 Tecnologias Utilizadas
 
-![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)
+**Backend:**
+
 ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
-![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
-![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white)
-![CSS3](https://img.shields.io/badge/css3-%231572B6.svg?style=for-the-badge&logo=css3&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)
 ![Groq](https://img.shields.io/badge/Groq-f55036?style=for-the-badge)
 ![MYSQL](https://img.shields.io/badge/MySQL-005C84?style=for-the-badge&logo=mysql&logoColor=white)
 
+**Frontend:**
 
+![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white)
+![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)
+
+---
 
 ## ⚙️ Instalação
 
-Siga os passos abaixo para configurar o ambiente:
-
+### 1. Clonar e Backend (Python)
 ```bash
 # Clone o repositório
 git clone https://github.com/IagoDSN/Nexus_IA
@@ -60,6 +64,25 @@ venv\Scripts\activate
 # Instale as dependências
 pip install -r requirements.txt
 ```
+
+### 2. Frontend (Node.js & Vite)
+O frontend é construído com TypeScript e Vite. Você precisa compilar os arquivos para o FastAPI servir a pasta dist.
+
+```bash
+# Navegue até a pasta do web app
+cd nexus-web
+
+# Instale as dependências do Node
+npm install
+
+# Gere o build de produção
+npm run build
+
+# Retorne para a raiz do projeto
+cd ..
+```
+---
+
 ## 🗄️ Configuração do Banco de Dados
 
 O projeto utiliza **MySQL/MariaDB**. Para configurar a estrutura necessária:
@@ -98,11 +121,13 @@ uvicorn main:app --reload
 ```
 
 Após iniciar, acesse a interface pelo navegador:
-http://127.0.0.1:8000/web/index.html
+http://127.0.0.1:8000
 
 ## ⚠️ Importante
 
 Piper TTS: Certifique-se de que os binários e modelos do Piper estão na pasta correta conforme configurado no main.py.
+
+Build do Front: Sempre que fizer alterações nos arquivos .ts ou .css da pasta nexus-web, você deve rodar npm run build novamente para que as mudanças reflitam no servidor FastAPI.
 
 Microfone: O navegador exige uma conexão segura (HTTPS ou localhost) para permitir o uso do microfone.
 
