@@ -4,88 +4,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus AI - Interface</title>
+    <title>Nexus IA - Protocol</title>
     <link rel="icon"
         href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSxa1QoYtdH5IN1brKXbFixp6rIJv1YbEAeJg&s">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="public/style.css">
+    <link rel="stylesheet" href="public/dash.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
 <body>
 
-    <!-- LOGIN / CADASTRO -->
     <div id="loginSection" class="auth-wrapper fade show">
         <div class="login-card">
-
             <div class="login-header">
                 <i data-lucide="shield-check"></i>
                 <h1>Nexus Protocol</h1>
                 <p>Identifique-se, Senhor.</p>
             </div>
 
-            <!-- LOGIN -->
             <div class="login-form" id="loginForm">
                 <input type="text" id="userLogin" placeholder="Usuário/Email" autocomplete="off">
                 <input type="password" id="passLogin" placeholder="Senha" autocomplete="new-password">
-
                 <button id="loginBtn" class="login-btn" onclick="handleLogin()">
                     <span>Acessar</span>
                     <i data-lucide="arrow-right"></i>
                 </button>
-
                 <p class="switch-auth">
-                    Não tem conta?
-                    <span onclick="toggleAuth()" style="cursor: pointer; color: rgb(11, 219, 219);">Cadastrar</span>
+                    Não tem conta? <span onclick="toggleAuth()"
+                        style="cursor: pointer; color: rgb(11, 219, 219);">Cadastrar</span>
                 </p>
-                <div class="github-link">
-                    <a href="https://github.com/IagoDSN" target="_blank">
-                        <svg height="18" viewBox="0 0 16 16" fill="currentColor">
-                            <path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38 
-            0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13
-            -.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 
-            2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 
-            0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 
-            0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 
-            2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 
-            2.12.51.56.82 1.27.82 2.15 
-            0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 
-            0 1.07-.01 1.93-.01 2.2 
-            0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z" />
-                        </svg>
-                        <span>IagoDSN</span>
-                    </a>
-                </div>
             </div>
 
-            <!-- CADASTRO -->
             <div class="login-form" id="registerForm" style="display:none;">
                 <input type="text" id="userRegister" placeholder="Usuário">
                 <input type="email" id="emailRegister" placeholder="Email">
                 <input type="password" id="passRegister" placeholder="Senha">
-
                 <button class="login-btn" onclick="handleRegister()">
                     <span>Cadastrar</span>
                     <i data-lucide="user-plus"></i>
                 </button>
-
                 <p class="switch-auth">
-                    Já tem conta?
-                    <span onclick="toggleAuth()" style="cursor: pointer; color: rgb(11, 219, 219);">Entrar</span>
+                    Já tem conta? <span onclick="toggleAuth()"
+                        style="cursor: pointer; color: rgb(11, 219, 219);">Entrar</span>
                 </p>
             </div>
-
         </div>
     </div>
 
-    <!-- APP -->
     <div id="mainApp" class="app-container fade" style="display: none;">
         <main class="chat-area">
             <header class="chat-header">
-                <div class="logo">
-                    <i data-lucide="zap"></i>
-                    <span>NEXUS IA</span>
-                </div>
+                <div class="logo"><i data-lucide="zap"></i><span>NEXUS IA</span></div>
                 <div class="voice-settings">
                     <select id="voiceGender">
                         <option value="male">Atlas</option>
@@ -93,26 +63,71 @@
                     </select>
                 </div>
             </header>
-
-            <button id="logoutBtn" class="logout-floating">
-                <i data-lucide="log-out"></i>
-            </button>
-
+            <button id="logoutBtn" class="logout-floating"><i data-lucide="log-out"></i></button>
             <div class="messages-container" id="messagesContainer"></div>
-
             <div class="input-area">
                 <div class="input-wrapper">
                     <textarea id="userInput" placeholder="Envie um comando..." rows="1"></textarea>
                     <div class="input-actions">
-                        <button id="micBtn" class="action-btn mic">
-                            <i data-lucide="mic"></i>
-                        </button>
-                        <button id="sendBtn" class="action-btn send">
-                            <i data-lucide="send-horizonal"></i>
-                        </button>
+                        <button id="micBtn" class="action-btn mic"><i data-lucide="mic"></i></button>
+                        <button id="sendBtn" class="action-btn send"><i data-lucide="send-horizonal"></i></button>
                     </div>
                 </div>
             </div>
+        </main>
+    </div>
+
+    <div id="adminPanel" class="app-container fade" style="display: none;">
+        <header class="topbar">
+            <div class="logo">
+                <h1>NEXUS <span style="color: #fff;">ADMIN</span></h1>
+            </div>
+            <button id="adminLogoutBtn" class="logout-btn">Sair do Protocolo</button>
+        </header>
+
+        <main class="admin-content">
+            <section class="cards">
+                <div class="card">
+                    <h3>TOTAL DE USUÁRIOS</h3>
+                    <p id="totalUsers">0</p>
+                </div>
+                <div class="card">
+                    <h3>STATUS DO SISTEMA</h3>
+                    <p style="color: #22c55e; font-size: 1.2rem;">OPERACIONAL</p>
+                </div>
+            </section>
+
+            <section class="tables">
+                <div class="table-container">
+                    <h2>Gerenciamento de Usuários</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Cargo</th>
+                                <th>Ações Administrativas</th>
+                            </tr>
+                        </thead>
+                        <tbody id="userTable">
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="table-container">
+                    <h2>Registros de Comunicação (Últimas 20)</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 200px;">Remetente</th>
+                                <th>Conteúdo da Mensagem</th>
+                            </tr>
+                        </thead>
+                        <tbody id="messageTable">
+                        </tbody>
+                    </table>
+                </div>
+            </section>
         </main>
     </div>
 
@@ -124,18 +139,15 @@
         <button id="cancelVoice">Abortar</button>
     </div>
 
-    <!-- SCRIPT -->
     <script>
         function toggleAuth() {
             const login = document.getElementById("loginForm");
             const register = document.getElementById("registerForm");
-
             login.style.display = login.style.display === "none" ? "flex" : "none";
             register.style.display = register.style.display === "none" ? "flex" : "none";
         }
     </script>
-
-    <script type="module" src="scripts/main.js"></script>
+    <script type="module" src="/src/main.ts"></script>
 </body>
 
 </html>

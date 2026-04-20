@@ -1,26 +1,40 @@
-from fastapi import FastAPI, HTTPException, Depends, Header
+from fastapi import FastAPI, HTTPException, Depends
 from fastapi.security import HTTPBearer
-from pydantic import BaseModel
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+from pydantic import BaseModel
+
 import time
 import os
-from jose import jwt
 import datetime
+from jose import jwt
 
 from src.core.brain import processar_mensagem
-from src.database.databaseControl import get_all_users, get_user_memory, salvar_mensagem, limpar_memoria, get_last_messages, get_user_by_username, update_role
-from src.routers.auth import user_exists, criar_usuario, validar_username, verify_password, senha_forte
+from src.database.databaseControl import (
+    get_all_users,
+    get_user_memory,
+    salvar_mensagem,
+    limpar_memoria,
+    get_last_messages,
+    get_user_by_username,
+    update_role
+)
+from src.routers.auth import (
+    user_exists,
+    criar_usuario,
+    validar_username,
+    verify_password,
+    senha_forte
+)
 from src.services.tts import gerar_audio
 from src.core.security import SECRET_KEY
 
+# ================= CONFIG =================
 
 ALGORITHM = "HS256"
-
 app = FastAPI()
 
-app.mount("/web", StaticFiles(directory="web"), name="web")
-app.mount("/audio", StaticFiles(directory="audio"), name="audio")
-
+FRONTEND_DIST = os.path.join(os.getcwd(), "nexus-web", "dist")
 
 # ================= MODELS =================
 
@@ -39,64 +53,50 @@ class Message(BaseModel):
     jarvis: bool = False
     voice: str = "male"
 
-# ================= Functions =================
+
+# ================= AUTH =================
 
 security = HTTPBearer()
+
 def criar_token(data: dict):
     payload = data.copy()
     payload["exp"] = datetime.datetime.utcnow() + datetime.timedelta(hours=8)
-
-    token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
-    return token
+    return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
 def verificar_token(token=Depends(security)):
     try:
+        # Certifique-se que o SECRET_KEY aqui é o mesmo usado na geração
         payload = jwt.decode(token.credentials, SECRET_KEY, algorithms=[ALGORITHM])
         return payload
-    except:
-        raise HTTPException(status_code=401, detail="Token inválido")
-    
-def verificar_admin(payload=Depends(verificar_token)):
-    print("PAYLOAD:", payload)
+    except Exception as e:
+        # Retorna 401 para o frontend saber que deve limpar o localStorage
+        raise HTTPException(status_code=401, detail="Sessão expirada")
 
+
+def verificar_admin(payload=Depends(verificar_token)):
     if payload.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Acesso negado")
-
     return payload
 
 # ================= ADMIN =================
 
 @app.get("/admin/stats")
-def admin_stats(user=Depends(verificar_admin)):
-
-    users_db = get_all_users()
-    total_users = len(users_db)
-
-    users = [
-        {
-            "username": u["username"],
-            "email": u["email"],
-            "role": u.get("role", "user"),
-            "dateCreated": (
-                u["dateCreated"].isoformat()
-                if u.get("dateCreated")
-                else None
-            )
-        }
-        for u in users_db
-    ]
-
-    messages = get_last_messages(limit=20)
-
+def get_stats(user=Depends(verificar_token)):
+    if user["role"] != "admin":
+        raise HTTPException(403, "Acesso negado")
+    
+    users = get_all_users()
+    messages = get_last_messages(20)
+    
     return {
-        "total_users": total_users,
+        "total_users": len(users),
         "users": users,
         "recent_messages": messages
     }
 
+
 @app.post("/admin/ban")
 def ban_user(data: dict, user=Depends(verificar_admin)):
-
     username = data.get("username")
 
     if not username:
@@ -106,13 +106,13 @@ def ban_user(data: dict, user=Depends(verificar_admin)):
 
     if not target:
         raise HTTPException(404, "Usuário não encontrado")
-    
+
     if target["role"] == "admin":
-        raise HTTPException(403, "Não é possível banir um administrador")
+        raise HTTPException(403, "Não pode banir admin")
 
     update_role(username, "banned")
-
     return {"msg": "Usuário banido"}
+
 
 @app.post("/admin/unban")
 def unban_user(data: dict, user=Depends(verificar_admin)):
@@ -122,62 +122,43 @@ def unban_user(data: dict, user=Depends(verificar_admin)):
         raise HTTPException(400, "Username obrigatório")
 
     update_role(username, "user")
-
-    return {"msg": "Usuário desBanido"}
+    return {"msg": "Usuário desbanido"}
 
 @app.post("/admin/promote")
 def promote_user(data: dict, user=Depends(verificar_admin)):
-
     username = data.get("username")
-
-    if not username:
-        raise HTTPException(400, "Username obrigatório")
-
-    target = get_user_by_username(username)
-
-    if not target:
-        raise HTTPException(404, "Usuário não encontrado")
-
-    if target["role"] == "admin":
-        raise HTTPException(400, "Usuário já é admin")
-
     update_role(username, "admin")
-
-    return {"msg": "Usuário promovido a admin"}
+    return {"msg": "Usuário promovido"}
 
 @app.post("/admin/demote")
-def demote_user(data: dict, user=Depends(verificar_admin)):
-
+def demote_user(data: dict, user=Depends(verificar_token)):
+    if user["role"] != "admin":
+        raise HTTPException(403, "Acesso negado")
+    
     username = data.get("username")
-
     if username == user["username"]:
-        raise HTTPException(400, "Você não pode remover seu próprio admin")
-
+        raise HTTPException(400, "Você não pode rebaixar a si mesmo")
+        
     update_role(username, "user")
-
-    return {"msg": "Admin removido"}
-
+    return {"msg": f"Usuário {username} rebaixado para usuário comum"}
 # ================= REGISTER =================
 
 @app.post("/register")
 def register(data: Register):
 
-    # validar username
     if not validar_username(data.username):
-        raise HTTPException(status_code=400, detail="Username inválido")
+        raise HTTPException(400, "Username inválido")
 
-    # validar senha
     ok, msg = senha_forte(data.password)
     if not ok:
-        raise HTTPException(status_code=400, detail=msg)
+        raise HTTPException(400, msg)
 
-    # verificar duplicado
     if user_exists(data.email) or user_exists(data.username):
-        raise HTTPException(status_code=400, detail="Usuário ou email já existe")
+        raise HTTPException(400, "Usuário já existe")
 
     criar_usuario(data.username, data.email, data.password)
 
-    return {"msg": "Usuário criado com sucesso"}
+    return {"msg": "Usuário criado"}
 
 
 # ================= LOGIN =================
@@ -188,13 +169,13 @@ def login(data: Login):
     user = user_exists(data.login)
 
     if not user:
-        raise HTTPException(status_code=401, detail="Usuário não existe")
+        raise HTTPException(401, "Usuário não existe")
 
     if not verify_password(data.password, user["password"]):
-        raise HTTPException(status_code=401, detail="Senha incorreta")
+        raise HTTPException(401, "Senha incorreta")
 
     if user["role"] == "banned":
-        raise HTTPException(status_code=403, detail="Usuário banido")
+        raise HTTPException(403, "Usuário banido")
 
     token = criar_token({
         "username": user["username"],
@@ -207,11 +188,11 @@ def login(data: Login):
         "role": user["role"]
     }
 
+
 # ================= CHAT =================
 
 @app.post("/chat")
 def chat(msg: Message, user=Depends(verificar_token)):
-    print(f"Recebi de {msg.username}: {msg.text}")
 
     memoria = get_user_memory(msg.username)
 
@@ -222,8 +203,6 @@ def chat(msg: Message, user=Depends(verificar_token)):
         memoria_db=memoria,
         nome_usuario=msg.username
     )
-
-    print("Resposta IA:", resposta)
 
     salvar_mensagem(msg.username, "user", msg.text)
     salvar_mensagem(msg.username, "assistant", resposta)
@@ -240,3 +219,23 @@ def chat(msg: Message, user=Depends(verificar_token)):
         "response": resposta,
         "audio": audio_url
     }
+
+# ================= SERVING FRONTEND =================
+app.mount("/assets", StaticFiles(directory=os.path.join(FRONTEND_DIST, "assets")), name="assets")
+app.mount("/audio", StaticFiles(directory="audio"), name="audio")
+
+@app.get("/")
+def serve_frontend():
+    return FileResponse(os.path.join(FRONTEND_DIST, "index.html"))
+
+@app.get("/{full_path:path}")
+def serve_spa(full_path: str):
+
+    if full_path.startswith(("admin", "login", "chat", "api")):
+        raise HTTPException(status_code=404, detail="API endpoint not found")
+        
+    file_path = os.path.join(FRONTEND_DIST, full_path)
+    if os.path.exists(file_path):
+        return FileResponse(file_path)
+        
+    return FileResponse(os.path.join(FRONTEND_DIST, "index.html"))

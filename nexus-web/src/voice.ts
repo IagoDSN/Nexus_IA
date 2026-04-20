@@ -1,6 +1,18 @@
+type OnResultCallback = (texto: string) => void;
+type OnEndCallback = () => void;
+
 export class VoiceManager {
-    constructor(onResult, onEnd) {
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition: any;
+    falando: boolean;
+    escutando: boolean;
+    ultimoTexto: string;
+    ativo: boolean;
+
+    constructor(onResult: OnResultCallback, onEnd?: OnEndCallback) {
+        const SpeechRecognition =
+            (window as any).SpeechRecognition ||
+            (window as any).webkitSpeechRecognition;
+
         this.recognition = SpeechRecognition ? new SpeechRecognition() : null;
 
         this.falando = false;
@@ -10,56 +22,47 @@ export class VoiceManager {
 
         if (this.recognition) {
             this.recognition.lang = 'pt-BR';
-
             this.recognition.continuous = false;
 
-            this.recognition.onresult = (e) => {
+            this.recognition.onresult = (e: any) => {
                 if (this.falando) return;
 
                 const texto = e.results[0][0].transcript.trim();
 
-                // Não repetir
                 if (texto === this.ultimoTexto) {
                     console.log("Ignorado repetido:", texto);
                     return;
                 }
 
                 this.ultimoTexto = texto;
-
                 onResult(texto);
             };
 
             this.recognition.onend = () => {
                 this.escutando = false;
 
-                if (!this.ativo) {
-                    console.log("Reconhecimento parado (ativo = false)");
-                    return;
-                }
-
+                if (!this.ativo) return;
                 if (this.falando) return;
 
-                setTimeout(() => {
-                    this.start();
-                }, 500);
+                setTimeout(() => this.start(), 500);
 
                 if (onEnd) onEnd();
             };
         }
     }
 
-    start() {
-    if (!this.recognition || this.escutando) return;
+    start(): void {
+        if (!this.recognition || this.escutando) return;
 
-    this.ativo = true;
+        this.ativo = true;
 
-    try {
-        this.recognition.start();
-        this.escutando = true;
-    } catch (e) {}
-}
+        try {
+            this.recognition.start();
+            this.escutando = true;
+        } catch {}
+    }
 
-    stop() {
+    stop(): void {
         if (!this.recognition) return;
 
         this.ativo = false;
@@ -67,10 +70,10 @@ export class VoiceManager {
         try {
             this.recognition.stop();
             this.escutando = false;
-        } catch (e) { }
+        } catch {}
     }
 
-    tocarAudio(url, onAudioEnd) {
+    tocarAudio(url: string, onAudioEnd?: () => void): void {
         this.falando = true;
 
         this.stop();
@@ -80,6 +83,7 @@ export class VoiceManager {
 
         audio.onended = () => {
             this.falando = false;
+
             if (this.ativo) {
                 this.start();
             }
