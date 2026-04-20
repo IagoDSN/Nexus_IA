@@ -1,8 +1,8 @@
-import { elements, adicionarMensagem, alternarTelas, mostrarTela } from './ui';
-import { enviarParaChat, registrar } from './api';
-import { VoiceManager } from './voice';
-import { Auth } from './auth';
-import { carregarDashboard, inicializarDashboard } from './dash';
+import { elements, adicionarMensagem, alternarTelas, mostrarTela } from './components/ui';
+import { enviarParaChat, registrar } from './api/api';
+import { VoiceManager } from './core/voice';
+import { Auth } from './core/auth';
+import { carregarDashboard, inicializarDashboard } from './components/dash';
 
 const API_URL = "http://127.0.0.1:8000";
 
