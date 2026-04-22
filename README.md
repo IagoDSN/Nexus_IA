@@ -4,7 +4,7 @@
   
 ![Status](https://img.shields.io/badge/Status-Em_desenvolvimento-red)
 ![Agent](https://img.shields.io/badge/AI_Agent-Autonomous-blueviolet?style=flat&logo=openai)
-![Version](https://img.shields.io/badge/Version-0.1.0--beta-blue?style=flat-square)
+![Version](https://img.shields.io/badge/Version-0.3.2--beta-blue?style=flat-square)
 ![Licença](https://img.shields.io/github/license/IagoDSN/Nexus_IA?style=flat-square&color=important)
 [![Ultimo Update](https://img.shields.io/github/last-commit/IagoDSN/Nexus_IA?label=Ultimo%20Update&style=classic)](https://github.com/IagoDSN/Nexus_IA)
 </div>
